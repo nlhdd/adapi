@@ -1,3 +1,4 @@
+-- Active: 1787047009248@@127.0.0.1@5432@laremise
 -- =====================================================================
 --  Adatabase — La Remise
 --  migration_down.sql — suppression complète
