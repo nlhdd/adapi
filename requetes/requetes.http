@@ -1,2 +1,118 @@
+
+### Catégories - lecture
 GET http://localhost:3000/api/categories
+
+### Objets - lecture
+GET http://localhost:3000/api/objets
+
+### Objets - filtre statut (ex: arrive)
+GET http://localhost:3000/api/objets?statut=arrive
+
+### Objets - filtre catégorie (ex: id=4)
+GET http://localhost:3000/api/objets?categorie_id=4
+
+### Objets - filtre objet précis (ex: id=27)
+GET http://localhost:3000/api/objets/27
+
+### Objets - Cas d'erreur, id inexistant (404)
+GET http://localhost:3000/api/objets/959375
+
+### Dépots - filtre dépot précis (ex: id=7)
+GET http://localhost:3000/api/depots/7
+
+###. épots - Cas d'erreur, id inexistant (404)
+GET http://localhost:3000/api/depots/959375
+
+### Personnes - Ajout
+POST http://localhost:3000/api/personnes
 Content-Type: application/json
+
+{
+  "nom": "Jeong",
+  "prenom": "Eun-Jin",
+  "telephone": "0612345678",
+  "adherente": true
+}
+
+### Personnes - Cas d'erreur, champ obligatoire manquant (400)
+POST http://localhost:3000/api/personnes
+Content-Type: application/json
+
+{
+  "prenom": "Sunny"
+}
+
+### Dépots - Ajout 
+POST http://localhost:3000/api/depots
+Content-Type: application/json
+
+{
+  "personne_id": 1,
+  "date_depot": "2026-09-03",
+  "type": "domicile"
+}
+
+### Dépots - Cas d'erreur, champ obligatoire manquant (400)
+POST http://localhost:3000/api/depots
+Content-Type: application/json
+
+{
+  "type": "domicile"
+}
+
+### Dépots - Ajouter un nouvel objet
+POST http://localhost:3000/api/depots/1/objets
+Content-Type: application/json
+
+{
+  "libelle": "Chaise en bois",
+  "poids_kg": 3.5,
+  "etat_arrivee": "bon_etat",
+  "categorie_id": 1
+}
+
+### Dépots - Cas d'erreur, champs manquant (400)
+POST http://localhost:3000/api/depots/1/objets
+Content-Type: application/json
+
+{
+  "libelle": "Chaise en bois",
+  "etat_arrivee": "bon_etat",
+  "categorie_id": 1
+}
+
+### Objets - modification du statut
+PATCH http://localhost:3000/api/objets/1/statut
+Content-Type: application/json
+
+{
+  "statut": "en_rayon"
+}
+
+### Objets - modification du statut avec prix
+PATCH http://localhost:3000/api/objets/1/statut
+Content-Type: application/json
+
+{
+  "statut": "en_rayon",
+  "prix": 15
+}
+
+### Objets - Cas d'erreur, statut invalide ENUM (400)
+PATCH http://localhost:3000/api/objets/1/statut
+Content-Type: application/json
+
+{
+  "statut": "pas_là"
+}
+
+### Objets - Cas d'erreur, id inexistant (404)
+PATCH http://localhost:3000/api/objets/9999/statut
+Content-Type: application/json
+
+{
+  "statut": "en_rayon"
+}
+
+### Stats
+GET http://localhost:3000/api/stats

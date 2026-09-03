@@ -47,14 +47,15 @@ router.post("/", async (req, res) => {
 	}
 });
 
-
 router.post("/:id/objets", async (req, res) => {
 	const { id } = req.params;
 	const { libelle, poids_kg, etat_arrivee, categorie_id } = req.body;
 
+
 	if (!libelle || !poids_kg || !etat_arrivee || !categorie_id) {
 		return res.status(400).json({ erreur: "Champs obligatoires manquants" });
 	}
+
 	try {
 		const { rows } = await pool.query(
 			`INSERT INTO objet (libelle, poids_kg, etat_arrivee, categorie_id, depot_id)

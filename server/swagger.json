@@ -6,11 +6,227 @@
     "description": "API de gestion de la ressourcerie La Remise"
   },
   "paths": {
-    "/objets": {
+    "/api/objets": {
       "get": {
-        "summary": "Liste tous les objets",
+        "summary": "Liste les objets (filtrables par statut et catégorie)",
+        "parameters": [
+          {
+            "name": "statut",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Filtre par statut"
+          },
+          {
+            "name": "categorie_id",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" },
+            "description": "Filtre par catégorie"
+          }
+        ],
         "responses": {
           "200": { "description": "La liste des objets" }
+        }
+      },
+      "post": {
+        "summary": "Crée un objet",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["libelle", "poids_kg", "etat_arrivee", "categorie_id", "depot_id"],
+                "properties": {
+                  "libelle": { "type": "string" },
+                  "poids_kg": { "type": "number" },
+                  "etat_arrivee": { "type": "string" },
+                  "categorie_id": { "type": "integer" },
+                  "depot_id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Objet créé" }
+        }
+      }
+    },
+    "/api/objets/{id}": {
+      "get": {
+        "summary": "Récupère un objet par son id (avec catégorie, dépôt et donatrice)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Id de l'objet"
+          }
+        ],
+        "responses": {
+          "200": { "description": "L'objet demandé" },
+          "404": { "description": "Objet introuvable" }
+        }
+      }
+    },
+    "/api/objets/{id}/statut": {
+      "patch": {
+        "summary": "Met à jour le statut d'un objet (et son prix)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Id de l'objet"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["statut"],
+                "properties": {
+                  "statut": {
+                    "type": "string",
+                    "enum": ["arrive", "en_reparation", "en_rayon", "vendu", "recycle"]
+                  },
+                  "prix": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Objet mis à jour" },
+          "400": { "description": "Statut invalide" },
+          "404": { "description": "Objet introuvable" }
+        }
+      }
+    },
+    "/api/depots": {
+      "post": {
+        "summary": "Enregistre un dépôt",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["personne_id", "date_depot", "type"],
+                "properties": {
+                  "personne_id": { "type": "integer" },
+                  "date_depot": { "type": "string", "format": "date" },
+                  "type": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Dépôt créé" },
+          "400": { "description": "Champs obligatoires manquants" }
+        }
+      }
+    },
+    "/api/depots/{id}": {
+      "get": {
+        "summary": "Récupère un dépôt par son id (avec objets et donatrice)",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Id du dépôt"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Le dépôt demandé" },
+          "400": { "description": "Id invalide" },
+          "404": { "description": "Dépôt introuvable" }
+        }
+      }
+    },
+    "/api/depots/{id}/objets": {
+      "post": {
+        "summary": "Ajoute un objet au dépôt",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Id du dépôt"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["libelle", "poids_kg", "etat_arrivee", "categorie_id"],
+                "properties": {
+                  "libelle": { "type": "string" },
+                  "poids_kg": { "type": "number" },
+                  "etat_arrivee": { "type": "string" },
+                  "categorie_id": { "type": "integer" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Objet ajouté au dépôt" },
+          "400": { "description": "Champs obligatoires manquants" }
+        }
+      }
+    },
+    "/api/personnes": {
+      "post": {
+        "summary": "Crée une donatrice",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nom", "prenom"],
+                "properties": {
+                  "nom": { "type": "string" },
+                  "prenom": { "type": "string" },
+                  "telephone": { "type": "string" },
+                  "adherente": { "type": "boolean" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Donatrice créée" },
+          "400": { "description": "Champs obligatoires manquants" }
+        }
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "summary": "Liste toutes les catégories",
+        "responses": {
+          "200": { "description": "La liste des catégories (id et libelle)" }
+        }
+      }
+    },
+    "/api/stats": {
+      "get": {
+        "summary": "Trois indicateurs : objets par statut, poids total reçu, poids détourné",
+        "responses": {
+          "200": { "description": "Les statistiques de la ressourcerie" }
         }
       }
     }
