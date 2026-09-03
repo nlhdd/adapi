@@ -60,6 +60,24 @@ router.post("/", async (req, res) => {
 	res.status(201).json(rows[0]);
 });
 
+router.patch("/:id/statut", async (req, res) => {
+	const { statut, prix } = req.body;
 
+	const STATUTS = ["arrive", "en_reparation", "en_rayon", "vendu", "recycle"];
+	if (!STATUTS.includes(statut)) {
+		return res.status(400).json({ erreur: "Statut invalide" });
 
+	}
+	const { rows } = await pool.query(
+		`UPDATE objet
+		SET statut = $2::statut_objet,
+		prix = COALESCE($3, prix),
+		date_mise_rayon = CASE WHEN $2 = 'en_rayon' THEN CURRENT_DATE ELSE date_mise_rayon END
+		WHERE id = $1 RETURNING *`,
+		[req.params.id, statut, prix ?? null]
+	);
+
+	if (rows.length === 0) return res.status(404).json({ erreur: "Introuvable" });
+	res.json(rows[0]);
+});
 export default router;
